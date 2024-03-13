@@ -1,0 +1,88 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+
+#define MAX_CHAR 256
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <math.h>
+
+// 去除标点符号和空格
+void removePunctuationAndSpace(char* str) {
+	int len = strlen(str);
+	for (int i = 0; i < len; i++) {
+		if (ispunct(str[i]) || isspace(str[i])) {
+			str[i] = ' ';
+		}
+	}
+}
+
+// 转换为小写字母
+void toLowerCase(char* str) {
+	int len = strlen(str);
+	for (int i = 0; i < len; i++) {
+		str[i] = tolower(str[i]);
+	}
+}
+
+// 计算余弦相似度
+float cosineSimilarity(char* str1, char* str2) {
+	int vec1[MAX_CHAR] = { 0 };
+	int vec2[MAX_CHAR] = { 0 };
+
+	int len1 = strlen(str1);
+	int len2 = strlen(str2);
+
+	for (int i = 0; i < len1; i++) {
+		vec1[(int)str1[i]]++;
+	}
+
+	for (int i = 0; i < len2; i++) {
+		vec2[(int)str2[i]]++;
+	}
+
+	float dotProduct = 0.0;
+	float normVec1 = 0.0;
+	float normVec2 = 0.0;
+
+	for (int i = 0; i < MAX_CHAR; i++) {
+		dotProduct += vec1[i] * vec2[i];
+		normVec1 += vec1[i] * vec1[i];
+		normVec2 += vec2[i] * vec2[i];
+	}
+
+	normVec1 = sqrt(normVec1);
+	normVec2 = sqrt(normVec2);
+
+	if (normVec1 == 0 || normVec2 == 0) {
+		return 0.0;
+	}
+
+	return dotProduct / (normVec1 * normVec2);
+}
+
+int main() {
+	FILE* file1 = fopen("C:\\wx\\WeChat Files\\wxid_8c49z6a9b7u622\\FileStorage\\File\\2024-03\\测试文本\\orig.txt", "r");
+	FILE* file2 = fopen("C:\\wx\\WeChat Files\\wxid_8c49z6a9b7u622\\FileStorage\\File\\2024-03\\测试文本\\orig_0.8_add.txt", "r");
+
+	char str1[11000];
+	char str2[11000];
+
+	fgets(str1, sizeof(str1), file1);
+	fgets(str2, sizeof(str2), file2);
+
+	fclose(file1);
+	fclose(file2);
+
+	removePunctuationAndSpace(str1);
+	removePunctuationAndSpace(str2);
+
+	toLowerCase(str1);
+	toLowerCase(str2);
+
+	float similarity = cosineSimilarity(str1, str2);
+
+	printf("相似度：%.2f\n", similarity);
+
+	return 0;
+}
